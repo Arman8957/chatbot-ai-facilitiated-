@@ -1,0 +1,92 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:uuid/uuid.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+class ChatBotApp extends StatelessWidget {
+  const ChatBotApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: ChatPage(),
+    );
+  }
+}
+
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final List<types.Message> _messages = [];
+  final types.User _user = const types.User(id: 'user');
+
+  void _addMessage(types.Message message) {
+    setState(() {
+      _messages.insert(0, message);
+    });
+  }
+
+  Future<void> _handleSendPressed(types.PartialText message) async {
+    final textMessage = types.TextMessage(
+      author: _user,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: const Uuid().v4(),
+      text: message.text,
+    );
+
+    _addMessage(textMessage);
+
+    final aiResponse = await getAIResponse(message.text);
+
+    final botMessage = types.TextMessage(
+      author: const types.User(id: 'bot'),
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: const Uuid().v4(),
+      text: aiResponse,
+    );
+
+    _addMessage(botMessage);
+  }
+
+  Future<String> getAIResponse(String prompt) async {
+    const apiKey = 'YOUR_OPENAI_API_KEY'; // Replace securely
+    const url = 'https://api.openai.com/v1/chat/completions';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: json.encode({
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+          {'role': 'user', 'content': prompt},
+        ]
+      }),
+    );
+
+    final decoded = json.decode(response.body);
+    return decoded['choices'][0]['message']['content'];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Chat(
+          messages: _messages,
+          onSendPressed: _handleSendPressed,
+          user: _user,
+        ),
+      ),
+    );
+  }
+}
