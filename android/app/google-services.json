@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "212991684869",
+    "project_id": "supervisor-solutions-b8160",
+    "storage_bucket": "supervisor-solutions-b8160.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212991684869:android:de41d5241839dbac57c76c",
+        "android_client_info": {
+          "package_name": "com.example.chatbot_ai_facilitated"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACff4rgC502J9JheyQaWyXzxVHXlCCjhc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
